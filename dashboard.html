@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduNet Dashboard</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const firebaseConfig = {
+        apiKey: "AIzaSyDt4gkqnt7MDJQ7wNyNIOKFmUsSuw1edHE",
+        authDomain: "edunet-2c8c0.firebaseapp.com",
+        projectId: "edunet-2c8c0",
+        storageBucket: "edunet-2c8c0.firebasestorage.app",
+        messagingSenderId: "211095426210",
+        appId: "1:211095426210:web:2f70117e55e146890cb3fb"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+      let currentUser = null;
+
+      function renderPosts(snapshot) {
+        const feedContainer = document.getElementById("feed");
+        if (!feedContainer) return;
+        feedContainer.innerHTML = "";
+        snapshot.forEach((doc) => {
+          const post = doc.data();
+          const postDiv = document.createElement("div");
+          postDiv.className = "post";
+          postDiv.innerHTML = `
+            <h3>${post.username}</h3>
+            <p>${post.message}</p>
+            ${post.image ? `<img src="${post.image}" alt="Post image">` : ""}
+            <div class="actions">
+              <span>👍 Like</span>
+              <span>💬 Comment</span>
+              <span>🔗 Share</span>
+            </div>
+          `;
+          feedContainer.appendChild(postDiv);
+        });
+      }
+
+      function setupRealtimePosts() {
+        const postCollection = collection(db, "posts");
+        onSnapshot(postCollection, renderPosts);
+      }
+
+      async function addPost() {
+        const username = currentUser?.email || "Anonymous";
+        const message = document.getElementById("message").value.trim();
+        const image = document.getElementById("image").value.trim();
+        if (username && message) {
+          await addDoc(collection(db, "posts"), { username, message, image });
+          document.getElementById("message").value = "";
+          document.getElementById("image").value = "";
+        }
+      }
+
+      window.addPost = addPost;
+
+      window.sendMessage = async function sendMessage() {
+        const chatInput = document.getElementById("chatInput");
+        const message = chatInput.value.trim();
+        if (message) {
+          await addDoc(collection(db, "messages"), {
+            username: currentUser?.email || "Guest",
+            message,
+          });
+          chatInput.value = "";
+        }
+      };
+
+      function setupRealtimeChat() {
+        const chatLog = document.getElementById("chatLog");
+        const messagesRef = collection(db, "messages");
+        onSnapshot(messagesRef, (snapshot) => {
+          chatLog.innerHTML = "";
+          snapshot.forEach((doc) => {
+            const msg = doc.data();
+            const p = document.createElement("p");
+            p.textContent = `${msg.username}: ${msg.message}`;
+            chatLog.appendChild(p);
+          });
+          chatLog.scrollTop = chatLog.scrollHeight;
+        });
+      }
+
+      document.getElementById("signupBtn").addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        await createUserWithEmailAndPassword(auth, email, password);
+      });
+
+      document.getElementById("loginBtn").addEventListener("click", async () => {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        await signInWithEmailAndPassword(auth, email, password);
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", async () => {
+        await signOut(auth);
+      });
+
+      onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        const authStatus = document.getElementById("authStatus");
+        if (authStatus) {
+          authStatus.textContent = user ? `Logged in as ${user.email}` : "Not logged in";
+        }
+      });
+
+      setupRealtimePosts();
+      setupRealtimeChat();
+    });
+  </script>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 1rem;
+    }
+    input, textarea {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      border-radius: 5px;
+    }
+    .post, .chat-log {
+      background: #222;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .actions span {
+      color: gold;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div id="authStatus">Not logged in</div>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="signupBtn">Sign Up</button>
+    <button id="loginBtn">Login</button>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <div>
+    <h2>Create Post</h2>
+    <textarea id="message" placeholder="What's on your mind?"></textarea>
+    <input type="text" id="image" placeholder="Image URL (optional)" />
+    <button onclick="addPost()">Post</button>
+  </div>
+
+  <div id="feed"></div>
+
+  <div>
+    <h2>Live Chat</h2>
+    <div class="chat-log" id="chatLog"></div>
+    <input type="text" id="chatInput" placeholder="Type message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</body>
+</html>

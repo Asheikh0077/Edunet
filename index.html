@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduNet Homepage</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
+    }
+    nav {
+      background: #111;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1rem;
+    }
+    nav ul li a {
+      color: #FFD700;
+      text-decoration: none;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: #222;
+    }
+    .services, .audience, .highlights, .categories {
+      padding: 2rem;
+      background: #111;
+      border-top: 1px solid #444;
+    }
+    h2 {
+      color: #FFD700;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    footer {
+      background: #111;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #999;
+    }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FFD700">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker Registered'))
+        .catch(err => console.log('SW registration failed', err));
+    }
+  </script>
+</head>
+<body>
+  <nav>
+    <div><strong>EduNet</strong></div>
+    <ul>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Communities</a></li>
+      <li><a href="#">Refer & Earn</a></li>
+      <li><a href="#">FAQ</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="dashboard.html">Login/Signup</a></li>
+    </ul>
+  </nav>
+
+  <header>
+    <h1>Explore Careers, Exams, Education Abroad, and More</h1>
+    <p>Your ultimate educational and career hub</p>
+  </header>
+
+  <section class="services">
+    <h2>Our Services</h2>
+    <div class="grid">
+      <div>Career Counseling</div>
+      <div>Admissions</div>
+      <div>Competitive Exams</div>
+      <div>Education Abroad</div>
+      <div>Olympiads</div>
+      <div>Grooming & Training</div>
+    </div>
+  </section>
+
+  <section class="audience">
+    <h2>Who We Serve</h2>
+    <div class="grid">
+      <div>School Students</div>
+      <div>College Students</div>
+      <div>Teachers & Counselors</div>
+      <div>Institutions</div>
+      <div>Companies</div>
+      <div>NGOs</div>
+    </div>
+  </section>
+
+  <section class="highlights">
+    <h2>Live Features</h2>
+    <ul>
+      <li>Live Streams</li>
+      <li>Video Content & Ads</li>
+      <li>Post Queries (like Quora)</li>
+    </ul>
+  </section>
+
+  <section class="categories">
+    <h2>Explore</h2>
+    <div class="grid">
+      <div>Events & Activities</div>
+      <div>Entrance Exams</div>
+      <div>Resources & Tips</div>
+      <div>Free Tests</div>
+      <div>Downloads</div>
+      <div>Matrimonial & Personal Grooming</div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 EduNet. All Rights Reserved.</p>
+  </footer>
+</body>
+</html>
